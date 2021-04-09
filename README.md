@@ -55,11 +55,11 @@ To save time, we have preconfigured Athena Federated query to work with S3, Auro
 
 ## Installing Athena DynamoDB Connector
 
-To install Athena DynamoDB Connector, search for **Serverless Application Repository** in your AWS account seach bar at the top of the Console and click on "Available applications" ([link](https://console.aws.amazon.com/serverlessrepo/home?region=us-east-1#/available-applications)):
+To install Athena DynamoDB Connector, search for **Serverless Application Repository** using the search bar at the top of the Console and click on "Available applications" ([link](https://console.aws.amazon.com/serverlessrepo/home?region=us-east-1#/available-applications)):
 
 <img src="img/2021-04-08-11-12-17.png" width="750">
 
-Make sure to tick **Show apps that create custom IAM roles or resource policies** and search for **AthenaDynamoDBConnector** and click on the one published by the AWS verified author:
+Make sure to tick **Show apps that create custom IAM roles or resource policies** and search for `AthenaDynamoDBConnector` and click on the one published by the AWS verified author:
 
 <img src="img/2021-04-06-12-14-06.png" width="750">
 
@@ -85,7 +85,7 @@ To complete installation of Athena DynamoDB Connector, we need to populate a few
 
 Tick **I acknowledge that this app creates custom IAM roles** and click **Deploy**:
 
-<img src="img/2021-04-06-12-25-18.png" width="750">
+<img src="img/2021-04-06-12-25-18.png" width="450">
 
 The installation process will deploy and configure the Athena DynamoDB connector. Installation will take place in the background in under a minute. 
 
@@ -95,14 +95,14 @@ We now have Athena connectors set up to query all required sources in our e-comm
 
 1. Go to Athena console: https://console.aws.amazon.com/athena/home?region=us-east-1# and click **Get Started**.
 
-    > Notice the announcement at the top of the screen. No action from you is required as we have upgraded your Athena Workgroup to the new [Athena v2 engine](https://aws.amazon.com/about-aws/whats-new/2020/11/amazon-athena-announces-availability-of-engine-version-2/) that supports Federated Queries. You can close the announcement if you want:
+    > Notice the announcement at the top of the screen. No action from you is required as we have upgraded your Athena Workgroup to the new [Athena v2 engine](https://aws.amazon.com/about-aws/whats-new/2020/11/amazon-athena-announces-availability-of-engine-version-2/) that supports Federated Queries. You can safely close or ignore the announcement:
     > <img src="img/2021-04-06-12-35-29.png" width="750">
 
 2. We prepared a few queries for you - click on **Saved Queries** and then click on the saved query named **Sources**:
    
    <img src="img/2021-04-06-13-01-19.png" width="750">
 
-3. In the Athena Query Editor you should see queries like this, each selecting a few rows from the 4 sources: S3, Aurora for MySQL, DynamoDB and Redis respectively:
+3. In the Athena Query Editor you should see the following queries, each selecting a few rows from the four registered sources: S3, Aurora for MySQL, DynamoDB and Redis respectively:
    
     ```sql
    select * from s3.lineitem limit 10;
@@ -120,12 +120,14 @@ We now have Athena connectors set up to query all required sources in our e-comm
    
     Proceed with highlighting and running the 2nd, 3rd and the 4th query to make sure all Athena connectors are fully operational.
 
-5. Now let's run some more complex queries! Go back to **Saved Queries** and try the following queries:
+5. Now let's run some more complex queries! Go back to **Saved Queries** and try out the following queries:
    
    * `FetchActiveOrderInfo` - to fetch active orders   
    * `ProfitBySupplierNationByYr` - to fetch annual profit by supplier by country
    * `SuppliersWhoKeptOrdersWaiting` - to fetch suppliers ordered by order fulfilment duration
    * `ShippedLineitemsPricingReport` - price/discount report across all orders
+
+   Notice how using Athena Federated Query you can join data sitting in a relational database (Aurora for MySQL) with data in a document database (DynamoDB), with data in Redis, with data on S3.
 
 ## Using Athena with BI Tools
 
@@ -155,9 +157,9 @@ Let's create a QuickSight account and try it out.
 
    <img src="img/2021-04-09-08-29-07.png" width="750">
 
-7. After a few seconds your QuickSight account is created. Click **Go to Amazon QuickSight** to proceed:
+7. In a few seconds your QuickSight account will be created. Click **Go to Amazon QuickSight** to proceed:
 
-   <img src="img/2021-04-09-08-30-19.png" width="750">
+   <img src="img/2021-04-09-08-30-19.png" width="450">
 
 8. Let's create a first report using data from Athena. Click **New analysis** in the top right corner:
    
@@ -178,7 +180,7 @@ Let's create a QuickSight account and try it out.
 
    <img src="img/2021-04-09-09-54-26.png" width="750">
 
-9. You are presented with a blank canvas - let's drop some columns onto it! QuickSight will adjust the best visualisation based on the data selected:
+10. You are presented with a blank canvas - let's drop some columns onto it! QuickSight will attempt to use the best visualisation based on the data selected:
    * Click `l_quantity`, then click `l_extendedprice` - the visualisation becomes a scatter plot which shows that there are no outliers and the order price increases in line with orded quantity:
 
       <img src="img/2021-04-09-18-05-03.png" width="750">
@@ -191,7 +193,7 @@ Let's create a QuickSight account and try it out.
 
       <img src="img/2021-04-09-18-23-10.png" width="750">
 
-   * Click on the `l_shipdate` date dimension and change from days to weeks:
+   * Click on the `l_shipdate` date dimension and change the aggregation to `Week`:
 
       <img src="img/2021-04-09-18-27-20.png" width="400">
 
@@ -205,9 +207,9 @@ Let's create a QuickSight account and try it out.
    
    Please note that all of the visualisations you've just generated are using Athena on top of the `s3.lineitems` table which is just a flat file on S3!
 
-   Feel free to stop or play with QuickSight or continue with the bonus task below.
+   Feel free to stop here or continue exploring QuickSight. Otherwise you can try the bonus task below.
 
-## [Bonus Task] Using Athena for data transformations
+## [Bonus Task] Using Athena for Data Transformations
 
 1. **BONUS TASK** Athena can also be used for basic EL(T) and writing data to S3. For example, notice that `s3.lineitem` is stored on S3 in a pipe-delimited format, which is inefficient for querying. Run `SHOW CREATE TABLE s3.lineitem;` in a new tab in Athena Query Editor and review the output. Notice that the table is defined as `EXTERNAL` and notice the serialisation format specified by `ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'`.
 
