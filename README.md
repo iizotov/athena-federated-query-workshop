@@ -1,5 +1,4 @@
 # Welcome to Cloud Guild - April 2021!
-This workshop is based on https://athena-in-action.workshop.aws/ and mainly focuses on [Amazon Athena Federated Query](https://aws.amazon.com/blogs/big-data/query-any-data-source-with-amazon-athenas-new-federated-query/).
 
 ## Getting Started
 You have been provided with an AWS Account to run this workshop. 
@@ -251,4 +250,8 @@ Thank you for joining today's session. We hope you found it useful. Should you w
 Please do not hesitate to reach out to Raj and Igor, your AWS Solution Arrchitects, if you have any questions. 
 
 See you next time!
+
+## Acknowledgements
+
+This workshop is based on https://athena-in-action.workshop.aws/
 
