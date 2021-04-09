@@ -1,4 +1,4 @@
-# Welcome to the Amazon Athena Workshop!
+# Welcome to Cloud Guild - April 2021!
 This workshop is based on https://athena-in-action.workshop.aws/ and mainly focuses on [Amazon Athena Federated Query](https://aws.amazon.com/blogs/big-data/query-any-data-source-with-amazon-athenas-new-federated-query/).
 
 ## Getting Started
@@ -58,7 +58,7 @@ To save time, we have preconfigured Athena Federated query to work with S3, Auro
 
 To install Athena DynamoDB Connector, search for **Serverless Application Repository** in your AWS account seach bar at the top of the Console and click on "Available applications" ([link](https://console.aws.amazon.com/serverlessrepo/home?region=us-east-1#/available-applications)):
 
-![](/img/2021-04-06-12-12-17.png)
+![](/img/2021-04-08-11-12-17.png)
 
 Make sure to tick **Show apps that create custom IAM roles or resource policies** and search for **AthenaDynamoDBConnector** and click on the one published by the AWS verified author:
 
@@ -127,12 +127,69 @@ We now have Athena connectors set up to query all required sources in our e-comm
    * `SuppliersWhoKeptOrdersWaiting` - to fetch suppliers ordered by order fulfilment duration
    * `ShippedLineitemsPricingReport` - price/discount report across all orders
 
-6. **BONUS TASK** Athena can also be used for basic EL(T) and writing data to S3. For example, notice that `default.lineitem` is stored on S3 in a pipe-delimited format, which is inefficient for querying. Run `SHOW CREATE TABLE default.lineitem;` in a new tab in Athena Query Editor and review the output. Notice that the table is defined as `EXTERNAL` and notice the serialisation format specified by `ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'`.
+## Using Athena with BI Tools
+
+You can use [ODBC and JDBC to access Athena](https://docs.aws.amazon.com/athena/latest/ug/policy-actions.html) using your favourite BI tool or even Excel. 
+
+Let's create a QuickSight account and try it out.
+
+1. In a new browser tab, go to https://quicksight.aws.amazon.com/
+2. Click on **Sign up for QuickSight**:
+   
+   ![](/img/2021-04-08-16-36-03.png)
+
+3. Select **Enterprise edition** and click **Continue**:
+   
+   ![](/img/2021-04-08-16-36-52.png)
+
+4. Enter the following values:
+   
+   * **Quicksight account name**: any globally unique name, for example `athena-<YOUR-AWS-ACCOUNT-ID>`
+   * **Notification email address**: your work or personal email address
+   
+5. Click on **Choose S3 buckets** link in the bottom right corner and in the pop-up window tick **Select all** and add **Write permission for Athena Workgroup** to give QuickSight access to S3 buckets in your AWS account. Click **Finish**:
+   
+   ![](/img/2021-04-09-08-22-44.png)
+
+6. Click **Finish** to complete setting up your QuickSight account:
+
+   ![](/img/2021-04-09-08-29-07.png)
+
+7. After a few seconds your QuickSight account is created. Click **Go to Amazon QuickSight** to proceed:
+
+   ![](/img/2021-04-09-08-30-19.png)
+
+8.  Let's create a first report using data from Athena. Click **New analysis** in the top right corner:
+   
+   ![](/img/2021-04-09-08-59-41.png)
+
+11. Because we don't have any datasets registered yet, click **New dataset**:
+    
+    ![](/img/2021-04-09-09-01-44.png)
+
+12. On the next screen, select **Athena** and in the pop-up window, enter `athena` as **Data source name** and click **Create data source**:
+
+   ![](/img/2021-04-09-09-03-44.png)
+
+11. On the next screen, select `s3` as the **database** and `lineitem` as the **table**. Click **Select**:
+
+   ![](/img/2021-04-09-09-52-54.png)
+
+12. On the next screen, select **Directly query your data** to query Athena directly and click **Visualize**:
+
+   ![](/img/2021-04-09-09-54-26.png)
+
+13. You are presented with a blank canvas - let's add some values onto it
+
+
+## [Bonus Task] Using Athena for data transformations
+
+1. **BONUS TASK** Athena can also be used for basic EL(T) and writing data to S3. For example, notice that `s3.lineitem` is stored on S3 in a pipe-delimited format, which is inefficient for querying. Run `SHOW CREATE TABLE s3.lineitem;` in a new tab in Athena Query Editor and review the output. Notice that the table is defined as `EXTERNAL` and notice the serialisation format specified by `ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'`.
 
     Let's run a [`CREATE TABLE AS SELECT` (CTAS) query](https://docs.aws.amazon.com/athena/latest/ug/ctas.html), to create a `PARQUET` version of the `lineitems` table, optimised for analytical queries on S3. In Athena Query Editor, run:
 
     ```sql
-    CREATE TABLE default.lineitem_parquet
+    CREATE TABLE s3.lineitem_parquet
     WITH (
         format = 'Parquet',
         parquet_compression = 'SNAPPY')
@@ -140,29 +197,32 @@ We now have Athena connectors set up to query all required sources in our e-comm
     FROM default.lineitem;
     ```
 
-    `PARQUET` is a columnar format, optimised for analytical queries. Run the following two queries - the first one on pipe-delimited `default.liteitem` table and the second one - on the `PARQUET`-optimised `default.lineitem_parquet` table. Highlight and run them separately, and note the difference in the amount of data scanned because of compression and column indexes in `PARQUET`. 
+    `PARQUET` is a columnar format, optimised for analytical queries. Run the following two queries - the first one on pipe-delimited `s3.liteitem` table and the second one - on the `PARQUET`-optimised `s3.lineitem_parquet` table. Highlight and run them separately, and note the difference in the amount of data scanned because of compression and column indexes in `PARQUET`. 
 
     ```sql
     -- First query
     SELECT AVG(l_discount) AS avg_discount, l_shipmode 
-    FROM default.lineitem
+    FROM s3.lineitem
     GROUP BY l_shipmode
     ORDER BY avg_discount DESC;
 
     -- Second query
     SELECT AVG(l_discount) AS avg_discount, l_shipmode 
-    FROM default.lineitem_parquet
+    FROM s3.lineitem_parquet
     GROUP BY l_shipmode
     ORDER BY avg_discount DESC;
     ```
 
     Similarly, you can materialise output of any of the analytical queries you ran earlier using optimised formats, like `PARQUET` or `ORC`. Try this yourself! 
 
-7. **BONUS TASK** Quicksight
-   
-   TODO
-
 ## Additional Materials
 
-TODO
+Thank you for joining today's session. We hope you found it useful. Should you want to learn more about Athena and other AWS services, check out our AWSome workshops:
+* Big Data: https://workshops.aws/categories/Big%20data
+* Analytics: https://workshops.aws/categories/Analytics
+* Data Lake: https://workshops.aws/categories/Data%20Lake
+
+Please do not hesitate to reach out to Raj and Igor, your AWS Solution Arrchitects, if you have any questions or would like to organise a workshop  
+
+See you next time!
 
