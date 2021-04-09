@@ -6,31 +6,31 @@ You have been provided with an AWS Account to run this workshop.
 
 1. Browse to https://dashboard.eventengine.run/ and enter your participant hash key to login to your AWS account:
    
-    ![](/img/2021-04-06-11-05-24.png)
+    <img src="img/2021-04-06-11-05-24.png" width="650">
 
 2. Click **Email One-Time Password (OTP)** to receive your one-time password. You can use your personal or corporate email:
    
-   ![](/img/2021-04-06-11-07-08.png)
+   <img src="img/2021-04-06-11-07-08.png" width="400">
 
 3. Enter your email and click **Send passcode**:
    
-   ![](/img/2021-04-06-11-09-49.png)
+   <img src="img/2021-04-06-11-09-49.png" width="400">
 
 4. Enter your passcode and click **Sign in**
    
-   ![](/img/2021-04-06-11-11-32.png)
+   <img src="img/2021-04-06-11-11-32.png" width="400">
 
 5. Now click on **AWS Console** to log into the AWS Console:
    
-   ![](/img/2021-04-06-11-13-51.png)
+   <img src="img/2021-04-06-11-13-51.png" width="650">
 
 6. In the pop-up window, click **Open AWS Console**, the Console will open in a new browser tab:
    
-   ![](/img/2021-04-06-11-17-40.png) 
+   <img src="img/2021-04-06-11-17-40.png" width="650"> 
 
 7. In the Console, make sure you're in the N. Virginia (us-east-1) AWS Region - the region selector is in the top right corner:
    
-   ![](/img/2021-04-06-11-19-20.png)
+   <img src="img/2021-04-06-11-19-20.png" width="400">
 
 Congrats, you're in!
 
@@ -41,7 +41,7 @@ Today we will focus on [Athena Federated Query](https://aws.amazon.com/blogs/big
 
 To demonstrate Athena federation capabilities, we will use the [TPCH dataset](http://www.tpc.org/tpch/), often used in decision support benchmarks. The queries and the data populating the database have been chosen to have broad industry-wide relevance. This benchmark illustrates decision support systems that examine large volumes of data, execute queries with a high degree of complexity, and give answers to critical business questions. The components of TPC-H consist of eight separate and individual tables (the Base Tables). The relationships between columns in these tables are illustrated in the following diagram:
 
-![](/img/2021-04-06-11-27-54.png)
+<img src="img/2021-04-06-11-27-54.png" width="650">
 
 In this workshop, we're dealing with a hypothetical e-commerce platform that consists of microservices with each microservice using a purpose-built managed AWS database engine. There's also a legacy part of the application that outputs regular extracts to S3. Here's how the tables are spread across AWS services:
 
@@ -50,7 +50,7 @@ In this workshop, we're dealing with a hypothetical e-commerce platform that con
 * [Amazon Aurora MySQL](https://aws.amazon.com/rds/aurora/) is used for processing `ORDERS`, `CUSTOMER` and `SUPPLIER` data
 * [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) holds the Parts (`PART`) and Parts/Supplier Relationship (`PARTSUPP`) tables for high performance
 
-![](/img/2021-04-06-11-40-41.png)
+<img src="img/2021-04-06-11-40-41.png" width="650">
 
 To save time, we have preconfigured Athena Federated query to work with S3, Aurora and Redis, but not to DynamoDB, which we are going to configure now.
 
@@ -58,11 +58,11 @@ To save time, we have preconfigured Athena Federated query to work with S3, Auro
 
 To install Athena DynamoDB Connector, search for **Serverless Application Repository** in your AWS account seach bar at the top of the Console and click on "Available applications" ([link](https://console.aws.amazon.com/serverlessrepo/home?region=us-east-1#/available-applications)):
 
-![](/img/2021-04-08-11-12-17.png)
+<img src="img/2021-04-08-11-12-17.png" width="650">
 
 Make sure to tick **Show apps that create custom IAM roles or resource policies** and search for **AthenaDynamoDBConnector** and click on the one published by the AWS verified author:
 
-![](/img/2021-04-06-12-14-06.png)
+<img src="img/2021-04-06-12-14-06.png" width="650">
 
 To complete installation of Athena DynamoDB Connector, we need to populate a few application settings (bottom right part of the screen):
 
@@ -86,7 +86,7 @@ To complete installation of Athena DynamoDB Connector, we need to populate a few
 
 Tick **I acknowledge that this app creates custom IAM roles** and click **Deploy**:
 
-![](/img/2021-04-06-12-25-18.png)
+<img src="img/2021-04-06-12-25-18.png" width="650">
 
 The installation process will deploy and configure the Athena DynamoDB connector. Installation will take place in the background in under a minute. 
 
@@ -97,11 +97,11 @@ We now have Athena connectors set up to query all required sources in our e-comm
 1. Go to Athena console: https://console.aws.amazon.com/athena/home?region=us-east-1# and click **Get Started**.
 
     > Notice the announcement at the top of the screen. No action from you is required as we have upgraded your Athena Workgroup to the new [Athena v2 engine](https://aws.amazon.com/about-aws/whats-new/2020/11/amazon-athena-announces-availability-of-engine-version-2/) that supports Federated Queries. You can close the announcement if you want:
-    > ![](/img/2021-04-06-12-35-29.png)
+    > <img src="img/2021-04-06-12-35-29.png" width="650">
 
 2. We prepared a few queries for you - click on **Saved Queries** and then click on the saved query named **Sources**:
    
-   ![](/img/2021-04-06-13-01-19.png)
+   <img src="img/2021-04-06-13-01-19.png" width="650">
 
 3. In the Athena Query Editor you should see queries like this, each selecting a few rows from the 4 sources: S3, Aurora for MySQL, DynamoDB and Redis respectively:
    
@@ -117,7 +117,7 @@ We now have Athena connectors set up to query all required sources in our e-comm
 
 4. We'll use these queries to test Athena Connectors for each of data source before running more complex queries. You need to run one query at a time: highlight the first query and click **Run query**. Once the query executes succesfully you should see the results like this:
    
-   ![](/img/2021-04-09-17-26-07.png)
+   <img src="img/2021-04-09-17-26-07.png" width="650">
    
     Proceed with highlighting and running the 2nd, 3rd and the 4th query to make sure all Athena connectors are fully operational.
 
@@ -137,11 +137,11 @@ Let's create a QuickSight account and try it out.
 1. In a new browser tab, go to https://quicksight.aws.amazon.com/
 2. Click on **Sign up for QuickSight**:
    
-   ![](/img/2021-04-08-16-36-03.png)
+   <img src="img/2021-04-08-16-36-03.png" width="650">
 
 3. Select **Enterprise edition** and click **Continue**:
    
-   ![](/img/2021-04-08-16-36-52.png)
+   <img src="img/2021-04-08-16-36-52.png" width="650">
 
 4. Enter the following values:
    
@@ -150,59 +150,59 @@ Let's create a QuickSight account and try it out.
    
 5. Click on **Choose S3 buckets** link in the bottom right corner and in the pop-up window tick **Select all** and add **Write permission for Athena Workgroup** to give QuickSight access to S3 buckets in your AWS account. Click **Finish**:
    
-   ![](/img/2021-04-09-17-46-12.png)
+   <img src="img/2021-04-09-17-46-12.png" width="650">
 
 6. Click **Finish** to complete setting up your QuickSight account:
 
-   ![](/img/2021-04-09-08-29-07.png)
+   <img src="img/2021-04-09-08-29-07.png" width="650">
 
 7. After a few seconds your QuickSight account is created. Click **Go to Amazon QuickSight** to proceed:
 
-   ![](/img/2021-04-09-08-30-19.png)
+   <img src="img/2021-04-09-08-30-19.png" width="650">
 
 8. Let's create a first report using data from Athena. Click **New analysis** in the top right corner:
    
-   ![](/img/2021-04-09-08-59-41.png)
+   <img src="img/2021-04-09-08-59-41.png" width="650">
 
 9. Let's register Athena as our first dataset, click **New dataset**:
     
-   ![](/img/2021-04-09-09-01-44.png)
+   <img src="img/2021-04-09-09-01-44.png" width="650">
 
 9. On the next screen, select **Athena** and in the pop-up window, enter `athena` as **Data source name** and click **Create data source**:
-   ![](/img/2021-04-09-09-03-44.png)
+   <img src="img/2021-04-09-09-03-44.png" width="650">
 
 9. On the next screen, select `s3` as the **database** and `lineitem` as the **table**. Click **Select**:
 
-   ![](/img/2021-04-09-09-52-54.png)
+   <img src="img/2021-04-09-09-52-54.png" width="650">
 
 9. On the next screen, select **Directly query your data** to query Athena directly and click **Visualize**:
 
-   ![](/img/2021-04-09-09-54-26.png)
+   <img src="img/2021-04-09-09-54-26.png" width="650">
 
 9. You are presented with a blank canvas - let's drop some columns onto it! QuickSight will adjust the best visualisation based on the data selected:
    * Click `l_quantity`, then click `l_extendedprice` - the visualisation becomes a scatter plot which shows that there are no outliers and the order price increases in line with orded quantity:
 
-      ![](/img/2021-04-09-18-05-03.png)
+      <img src="img/2021-04-09-18-05-03.png" width="650">
 
    * Create a new Sheet in QuickSight:
 
-      ![](/img/2021-04-09-18-00-38.png)
+      <img src="img/2021-04-09-18-00-38.png" width="400">
 
    * Click `l_shipdate`, then click `l_extendedprice` - this gives us a trendline of quantity by date. We can immediately notice the sharp decline in mid 1998 which may be indicative of a data quality issue:
 
-      ![](/img/2021-04-09-18-23-10.png)
+      <img src="img/2021-04-09-18-23-10.png" width="650">
 
    * Click on the `l_shipdate` date dimension and change from days to weeks:
 
-      ![](/img/2021-04-09-18-27-20.png)
+      <img src="img/2021-04-09-18-27-20.png" width="400">
 
    * Now Click **...** in the top right corner of the visualisation and click **Add forecast**:
 
-      ![](/img/2021-04-09-18-28-03.png)
+      <img src="img/2021-04-09-18-28-03.png" width="400">
 
    * QuickSight chooses the best machine learning model and plots the forecasted value:
 
-      ![](/img/2021-04-09-18-31-52.png)
+      <img src="img/2021-04-09-18-31-52.png" width="650">
    
    Please note that all of the visualisations you've just generated are using Athena on top of the `s3.lineitems` table which is just a flat file on S3!
 
