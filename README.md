@@ -206,8 +206,6 @@ Let's create a QuickSight account and try it out.
    
    Please note that all of the visualisations you've just generated are using Athena on top of the `s3.lineitems` table which is just a flat file on S3!
 
-   With Athena Federated Query you can bring other data sources to QuickSight and other data tools. 
-
    Feel free to stop or play with QuickSight or continue with the bonus task below.
 
 ## [Bonus Task] Using Athena for data transformations
@@ -222,7 +220,7 @@ Let's create a QuickSight account and try it out.
         format = 'Parquet',
         parquet_compression = 'SNAPPY')
     AS SELECT *
-    FROM default.lineitem;
+    FROM s3.lineitem;
     ```
 
     `PARQUET` is a columnar format, optimised for analytical queries. Run the following two queries - the first one on pipe-delimited `s3.liteitem` table and the second one - on the `PARQUET`-optimised `s3.lineitem_parquet` table. Highlight and run them separately, and note the difference in the amount of data scanned because of compression and column indexes in `PARQUET`. 
@@ -250,7 +248,7 @@ Thank you for joining today's session. We hope you found it useful. Should you w
 * Analytics: https://workshops.aws/categories/Analytics
 * Data Lake: https://workshops.aws/categories/Data%20Lake
 
-Please do not hesitate to reach out to Raj and Igor, your AWS Solution Arrchitects, if you have any questions or would like to organise a workshop  
+Please do not hesitate to reach out to Raj and Igor, your AWS Solution Arrchitects, if you have any questions. 
 
 See you next time!
 
