@@ -37,22 +37,22 @@ Congrats, you're in!
 ## Your AWS Environment
 During the briefing you would've been introduced to [Amazon Athena](https://aws.amazon.com/athena/?whats-new-cards.sort-by=item.additionalFields.postDateTime&whats-new-cards.sort-order=desc) - a serverless, interactive query service to query and analyze big data on S3 using standard SQL.
 
-Today we will focus on [Athena Federated Query](https://aws.amazon.com/blogs/big-data/query-any-data-source-with-amazon-athenas-new-federated-query/). This feature of Athena enables data analysts, engineers, and data scientists to execute SQL queries across data stored in S3, relational, non-relational, object, and custom data sources.
+Today we will focus on [Athena Federated Query](https://aws.amazon.com/blogs/big-data/query-any-data-source-with-amazon-athenas-new-federated-query/). This feature of Athena enables data analysts, engineers, and data scientists to execute SQL queries across data stored in relational, non-relational, object, and custom data sources, such as API.
 
-To demonstrate Athena federation capabilities, we use the [TPCH dataset](http://www.tpc.org/tpch/), often used in decision support benchmarks. It consists of a suite of business-oriented ad hoc queries and concurrent data modifications. The queries and the data populating the database have been chosen to have broad industry-wide relevance. This benchmark illustrates decision support systems that examine large volumes of data, execute queries with a high degree of complexity, and give answers to critical business questions. The components of TPC-H consist of eight separate and individual tables (the Base Tables). The relationships between columns in these tables are illustrated in the following diagram:
+To demonstrate Athena federation capabilities, we will use the [TPCH dataset](http://www.tpc.org/tpch/), often used in decision support benchmarks. The queries and the data populating the database have been chosen to have broad industry-wide relevance. This benchmark illustrates decision support systems that examine large volumes of data, execute queries with a high degree of complexity, and give answers to critical business questions. The components of TPC-H consist of eight separate and individual tables (the Base Tables). The relationships between columns in these tables are illustrated in the following diagram:
 
 ![](/img/2021-04-06-11-27-54.png)
 
-In this workshop, we've provisioned a number of purpose-built managed AWS database engines - one per microservice in a hypothetical distributed e-commerce application. Each of these purpose-built engines holds one or more tables from the TPCH schema:
+In this workshop, we're dealing with a hypothetical e-commerce platform that consists of microservices with each microservice using a purpose-built managed AWS database engine. There's also a legacy part of the application that outputs regular extracts to S3. Here's how the tables are spread across AWS services:
 
 * [Amazon S3](https://aws.amazon.com/s3/) holds extracts of `LINEITEMS` from a legacy system 
 * [Amazon ElastiCache for Redis](https://aws.amazon.com/elasticache/redis/) is used to store countries (`NATIONS`) and active orders (`ACTIVEORDERS`) so that the processing engine can get fast access to them
 * [Amazon Aurora MySQL](https://aws.amazon.com/rds/aurora/) is used for processing `ORDERS`, `CUSTOMER` and `SUPPLIER` data
-* [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) holds the Parts  (`PART`) and Parts/Supplier Relationship (`PARTSUPP`) tables for high performance
+* [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) holds the Parts (`PART`) and Parts/Supplier Relationship (`PARTSUPP`) tables for high performance
 
 ![](/img/2021-04-06-11-40-41.png)
 
-To save time, we have preconfigured Athena Federated query to work with S3, Aurora and Redis, but not to DynamoDB.
+To save time, we have preconfigured Athena Federated query to work with S3, Aurora and Redis, but not to DynamoDB, which we are going to configure now.
 
 ## Installing Athena DynamoDB Connector
 
@@ -64,9 +64,9 @@ Make sure to tick **Show apps that create custom IAM roles or resource policies*
 
 ![](/img/2021-04-06-12-14-06.png)
 
-For this Athena DynamoDB Connector, there are a few fields that we need to populate:
+To complete installation of Athena DynamoDB Connector, we need to populate a few application settings (bottom right part of the screen):
 
-**Application name**: Leave it as default name - AthenaDynamoDBConnector
+**Application name**: Leave it as default name - `AthenaDynamoDBConnector`
 
 **SpillBucket**: Put `athena-federation-workshop-<AWS_ACCOUNT_NUMBER>`
 
@@ -84,7 +84,7 @@ For this Athena DynamoDB Connector, there are a few fields that we need to popul
 
 **SpillPrefix**: Put `athena-spill-dynamo`
 
-Mark **I acknowledge that this app creates custom IAM roles** and click **deploy**:
+Tick **I acknowledge that this app creates custom IAM roles** and click **Deploy**:
 
 ![](/img/2021-04-06-12-25-18.png)
 
@@ -99,24 +99,25 @@ We now have Athena connectors set up to query all required sources in our e-comm
     > Notice the announcement at the top of the screen. No action from you is required as we have upgraded your Athena Workgroup to the new [Athena v2 engine](https://aws.amazon.com/about-aws/whats-new/2020/11/amazon-athena-announces-availability-of-engine-version-2/) that supports Federated Queries. You can close the announcement if you want:
     > ![](/img/2021-04-06-12-35-29.png)
 
-2. Click on **Saved Queries** and click on the saved query named **Sources**:
+2. We prepared a few queries for you - click on **Saved Queries** and then click on the saved query named **Sources**:
+   
    ![](/img/2021-04-06-13-01-19.png)
 
 3. In the Athena Query Editor you should see queries like this, each selecting a few rows from the 4 sources: S3, Aurora for MySQL, DynamoDB and Redis respectively:
    
     ```sql
-    select * from default.lineitem limit 10;
+   select * from s3.lineitem limit 10;
 
-    select * from "lambda:mysql".sales.supplier limit 10;
+   select * from "lambda:mysql".sales.supplier limit 10;
 
-    select * from "lambda:dynamo".default.part limit 10;
+   select * from "lambda:dynamo".default.part limit 10;
 
-    select * from "lambda:redis".redis.active_orders limit 5;
+   select * from "lambda:redis".redis.active_orders limit 5;
     ```
 
-4. These queries test your Athena Connector functionality for each data source and to make sure that you can extract data from each data source before running more complex queries. Since you can only run one query at a time, highlight the first query and click **Run query**. Once the query executes succesfully you should see the results like this:
+4. We'll use these queries to test Athena Connectors for each of data source before running more complex queries. You need to run one query at a time: highlight the first query and click **Run query**. Once the query executes succesfully you should see the results like this:
    
-   ![](/img/2021-04-06-13-06-55.png)
+   ![](/img/2021-04-09-17-26-07.png)
    
     Proceed with highlighting and running the 2nd, 3rd and the 4th query to make sure all Athena connectors are fully operational.
 
@@ -149,7 +150,7 @@ Let's create a QuickSight account and try it out.
    
 5. Click on **Choose S3 buckets** link in the bottom right corner and in the pop-up window tick **Select all** and add **Write permission for Athena Workgroup** to give QuickSight access to S3 buckets in your AWS account. Click **Finish**:
    
-   ![](/img/2021-04-09-08-22-44.png)
+   ![](/img/2021-04-09-17-46-12.png)
 
 6. Click **Finish** to complete setting up your QuickSight account:
 
@@ -159,28 +160,55 @@ Let's create a QuickSight account and try it out.
 
    ![](/img/2021-04-09-08-30-19.png)
 
-8.  Let's create a first report using data from Athena. Click **New analysis** in the top right corner:
+8. Let's create a first report using data from Athena. Click **New analysis** in the top right corner:
    
    ![](/img/2021-04-09-08-59-41.png)
 
-11. Because we don't have any datasets registered yet, click **New dataset**:
+9. Let's register Athena as our first dataset, click **New dataset**:
     
-    ![](/img/2021-04-09-09-01-44.png)
+   ![](/img/2021-04-09-09-01-44.png)
 
-12. On the next screen, select **Athena** and in the pop-up window, enter `athena` as **Data source name** and click **Create data source**:
-
+9. On the next screen, select **Athena** and in the pop-up window, enter `athena` as **Data source name** and click **Create data source**:
    ![](/img/2021-04-09-09-03-44.png)
 
-11. On the next screen, select `s3` as the **database** and `lineitem` as the **table**. Click **Select**:
+9. On the next screen, select `s3` as the **database** and `lineitem` as the **table**. Click **Select**:
 
    ![](/img/2021-04-09-09-52-54.png)
 
-12. On the next screen, select **Directly query your data** to query Athena directly and click **Visualize**:
+9. On the next screen, select **Directly query your data** to query Athena directly and click **Visualize**:
 
    ![](/img/2021-04-09-09-54-26.png)
 
-13. You are presented with a blank canvas - let's add some values onto it
+9. You are presented with a blank canvas - let's drop some columns onto it! QuickSight will adjust the best visualisation based on the data selected:
+   * Click `l_quantity`, then click `l_extendedprice` - the visualisation becomes a scatter plot which shows that there are no outliers and the order price increases in line with orded quantity:
 
+      ![](/img/2021-04-09-18-05-03.png)
+
+   * Create a new Sheet in QuickSight:
+
+      ![](/img/2021-04-09-18-00-38.png)
+
+   * Click `l_shipdate`, then click `l_extendedprice` - this gives us a trendline of quantity by date. We can immediately notice the sharp decline in mid 1998 which may be indicative of a data quality issue:
+
+      ![](/img/2021-04-09-18-23-10.png)
+
+   * Click on the `l_shipdate` date dimension and change from days to weeks:
+
+      ![](/img/2021-04-09-18-27-20.png)
+
+   * Now Click **...** in the top right corner of the visualisation and click **Add forecast**:
+
+      ![](/img/2021-04-09-18-28-03.png)
+
+   * QuickSight chooses the best machine learning model and plots the forecasted value:
+
+      ![](/img/2021-04-09-18-31-52.png)
+   
+   Please note that all of the visualisations you've just generated are using Athena on top of the `s3.lineitems` table which is just a flat file on S3!
+
+   With Athena Federated Query you can bring other data sources to QuickSight and other data tools. 
+
+   Feel free to stop or play with QuickSight or continue with the bonus task below.
 
 ## [Bonus Task] Using Athena for data transformations
 
