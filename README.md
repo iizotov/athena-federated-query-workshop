@@ -189,7 +189,7 @@ Let's create a QuickSight account and try it out.
 
       <img src="img/2021-04-09-18-00-38.png" width="400">
 
-   * Click `l_shipdate`, then click `l_extendedprice` - this gives us a trendline of quantity by date. We can immediately notice the sharp decline in mid 1998 which may be indicative of a data quality issue:
+   * Click `l_shipdate`, then click `l_quantity` - this gives us a trendline of quantity by date. We can immediately notice the sharp decline in mid 1998 which may be indicative of a data quality issue:
 
       <img src="img/2021-04-09-18-23-10.png" width="750">
 
@@ -213,7 +213,9 @@ Let's create a QuickSight account and try it out.
 
 1. **BONUS TASK** Athena can also be used for basic EL(T) and writing data to S3. For example, notice that `s3.lineitem` is stored on S3 in a pipe-delimited format, which is inefficient for querying. Run `SHOW CREATE TABLE s3.lineitem;` in a new tab in Athena Query Editor and review the output. Notice that the table is defined as `EXTERNAL` and notice the serialisation format specified by `ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'`.
 
-    Let's run a [`CREATE TABLE AS SELECT` (CTAS) query](https://docs.aws.amazon.com/athena/latest/ug/ctas.html), to create a `PARQUET` version of the `lineitems` table, optimised for analytical queries on S3. In Athena Query Editor, run:
+    Lets create a query-optimised version of the `s3.lineitems` table on S3 by using the [Creating a Table from Query Results (CTAS)](https://docs.aws.amazon.com/athena/latest/ug/ctas.html) function in Athena.
+    
+    In Athena Query Editor, run:
 
     ```sql
     CREATE TABLE s3.lineitem_parquet
@@ -224,7 +226,7 @@ Let's create a QuickSight account and try it out.
     FROM s3.lineitem;
     ```
 
-    `PARQUET` is a columnar format, optimised for analytical queries. Run the following two queries - the first one on pipe-delimited `s3.liteitem` table and the second one - on the `PARQUET`-optimised `s3.lineitem_parquet` table. Highlight and run them separately, and note the difference in the amount of data scanned because of compression and column indexes in `PARQUET`. 
+    `PARQUET` is a columnar format, optimised for analytical queries. Run the following two queries - the first one on pipe-delimited `s3.lineitem` table and the second one - on the `PARQUET`-optimised `s3.lineitem_parquet` table. Highlight and run them separately, and note the difference in the amount of data scanned because of compression and column indexes in `PARQUET`. 
 
     ```sql
     -- First query
